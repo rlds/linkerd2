@@ -25,6 +25,7 @@ func ToRoute(route *sp.RouteSpec) (*pb.Route, error) {
 		Condition:       cond,
 		ResponseClasses: rcs,
 		MetricsLabels:   map[string]string{"route": route.Name},
+		IsRetryable:     true,
 	}, nil
 }
 

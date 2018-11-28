@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"github.com/golang/protobuf/ptypes/duration"
 	pb "github.com/linkerd/linkerd2-proxy-api/go/destination"
 	sp "github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha1"
 	"github.com/linkerd/linkerd2/pkg/profiles"
@@ -51,5 +52,13 @@ func (l *profileListener) Update(profile *sp.ServiceProfile) {
 			routes = append(routes, pbRoute)
 		}
 	}
-	l.stream.Send(&pb.DestinationProfile{Routes: routes})
+	l.stream.Send(&pb.DestinationProfile{
+		Routes:              routes,
+		DefaultRetryTimeout: &duration.Duration{Seconds: 1},
+		RetryBudget: &pb.RetryBudget{
+			MinRetriesPerSecond: 10,
+			RetryRatio:          0.2,
+			Ttl:                 &duration.Duration{Seconds: 10},
+		},
+	})
 }
